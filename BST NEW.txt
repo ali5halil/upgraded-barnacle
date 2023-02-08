@@ -1,0 +1,253 @@
+#include<stdio.h>
+#include<malloc.h>
+typedef struct node
+{
+    int data;
+    int rh,lh;
+    struct node *right, *left;
+}node;
+void add(node **head, int x)
+{
+    if(*head==NULL)
+    {
+        (*head)=(node *)malloc(sizeof(node));
+        (*head)->left=(*head)->right=NULL;
+        (*head)->data=x;
+    }
+    else
+    {
+        if((*head)->data<x)
+        {
+            add(&((*head)->right),x);
+        }
+        else
+        {
+            add(&((*head)->left),x);
+        }
+    }
+}
+void print(node *head)
+{
+    if(head!=NULL)
+    {
+        print(head->left);
+        printf("%d",head->data);
+        print(head->right);
+    }
+}
+void print_inc(node *head)
+{
+    if(head!=NULL)
+    {
+        print_inc(head->left);
+        printf("%d",head->data);
+        print_inc(head->right);
+    }
+}
+void print_dec(node *head)
+{
+    if(head!=NULL)
+    {
+        print_dec(head->right);
+        printf("%d",head->data);
+        print_dec(head->left);
+    }
+}
+int count(node *head)
+{
+    if(head==NULL)
+    {
+        return 0;
+    }
+    return 1+count(head->left)+count(head->right);
+}
+int sum(node *head)
+{
+    if(head==NULL)
+    {
+        return 0;
+    }
+    return head->data + sum(head->right) +sum(head->left);
+}
+node *search(node *head, int x)
+{
+    if(head==NULL || head->data==x)
+    {
+        return head;
+    }
+    if(x>head->data)
+    {
+        return search(head->right,x);
+    }
+    if(x<head->data)
+    {
+        return search(head->left,x); 
+    }
+}
+int min_rec(node *head)
+{
+    if(head->left!=NULL)
+    {
+        return head->data;
+    }
+    return min_rec(head->left);
+}
+int min_it(node *head)
+{
+    while(head->left!=NULL)
+    {
+        head=head->left;
+    }
+    return head->data;
+}
+int max_rec(node *head)
+{
+    if(head->right!=NULL)
+    {
+        return head->data;
+    }
+    return max_rec(head->right);
+}
+int max_it(node *head)
+{
+    while(head->right!=NULL)
+    {
+        head=head->right;
+    }
+    return head->data;
+}
+void delete(node **head,int x)
+{
+    if((*head)!=NULL)
+    {
+        if(x>(*head)->data)
+        {
+            delete(&((*head)->right),x);
+        }
+        else if((*head)->data>x)
+        {
+            delete(&((*head)->left),x);
+        }
+        else
+        {
+            if((*head)->right==NULL && (*head)->left==NULL)
+            {
+                node *temp=*head;
+                *head=NULL;
+                free(temp);
+            }
+            else if((*head)->right==NULL || (*head)->left==NULL)
+            {
+                node *temp=*head;
+                if((*head)->right==NULL)
+                {
+                    (*head)=(*head)->left;
+                    free(temp);
+                }
+                else
+                {
+                    (*head)=(*head)->right;
+                    free(temp);
+                }
+            }
+            else
+            {
+                int s=min_rec((*head)->right);
+                (*head)->data=s;
+                delete(&((*head)->right),s);
+            }
+        }
+    }
+}
+int fill(node *head, int *a, int x)
+{
+    if(head==NULL)
+    {
+        return x;
+    }
+    x=fill(head->left,a,x);
+    a[x]=head->data;
+    x++;
+    x=fill(head->right,a,x);
+}
+int isbst(node *head)
+{
+    if((head->data)<min_rec(head) || (head->data)>max_rec(head))
+    {
+        return 0;
+    }
+    if(head->right==NULL && head->left==NULL)
+    {
+        return 1;
+    }
+    if(head->right==NULL)
+    {
+        return isbst(head->left);
+    }
+    if(head->left==NULL)
+    {
+        return isbst(head->right);
+    }
+    if(isbst(head->right)==1 && isbst(head->left)==1)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+int isbst2(node *head)
+{
+    if(head==NULL)
+    {
+        return 1;
+    }
+    if(head->right!=NULL && head->right->data<head->data)
+    {
+        return 0;
+    }
+    if(head->left!=NULL && head->left->data>head->data)
+    {
+        return 0;
+    }
+    if(isbst2(head->right)==0 || isbst2(head->left)==0)
+    {
+        return 0;
+    }
+    else
+    {
+        return 1;
+    }
+}
+int cal_hight(node *head)
+{
+    int lh,rh;
+    if(head!=NULL)
+    {
+        if(head->right!=NULL)
+        {
+            head->rh=1+cal_hight(head->right);
+        }
+        else
+        {
+            head->rh=0;
+        }
+        if(head->left!=NULL)
+        {
+            head->lh=1+cal_hight(head->left);
+        }
+        else
+        {
+            head->lh=0;
+        }
+        if(head->lh>head->rh)
+        {
+            return (lh);
+        }
+        if(head->rh>head->lh)
+        {
+            return (rh);
+        }
+    }
+}
